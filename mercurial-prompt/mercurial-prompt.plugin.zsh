@@ -1,17 +1,3 @@
-# Copyright 2017-2020 Ilya Arkhanhelsky (https://github.com/iarkhanhelsky)
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#    http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 # Updates hg root
 function update_hg_root() {
   local path=$(pwd)
@@ -62,13 +48,13 @@ fi
 
 function hg_branch() {
     if [[ -n $HG_ROOT ]]; then
-        local current_file="$HG_ROOT/.hg/branch"
-        if [[ "$ZSH_THEME_HG_PROMPT_USE_BOOKMARK" == "true" ]]; then
-          current_file="$HG_ROOT/.hg/bookmarks.current"
-        fi
-        local branch=$(cat "$current_file" 2> /dev/null)
+        local branch=$(cat "$HG_ROOT/.hg/branch" 2> /dev/null)
         if [[ -n $branch ]]; then
-          echo $branch
+            if [[ ${#branch} -ge 35 ]]; then
+                echo ${branch:0:30}'...'
+            else
+                echo $branch
+            fi
         else
           # After creation of empty repository branch technicaly
           # is `default`. But .hg/branch is not created until
@@ -83,11 +69,3 @@ function hg_prompt_info() {
         echo "$ZSH_PROMPT_BASE_COLOR$ZSH_THEME_HG_PROMPT_TAG$ZSH_THEME_HG_PROMPT_PREFIX$ZSH_THEME_HG_PROMPT_BRANCH_COLOR$(hg_branch)$ZSH_THEME_HG_PROMPT_COLOR$ZSH_THEME_HG_PROMPT_SUFFIX%{${reset_color}%}"
     fi
 }
-
-# Default values for the appearance of the prompt.
-ZSH_PROMPT_BASE_COLOR="%{${fg_bold[blue]}%}"
-ZSH_THEME_HG_PROMPT_TAG="hg"
-ZSH_THEME_HG_PROMPT_PREFIX=":"
-ZSH_THEME_HG_PROMPT_SUFFIX=""
-ZSH_THEME_HG_PROMPT_SEPARATOR="|"
-ZSH_THEME_HG_PROMPT_BRANCH_COLOR="%{$fg_bold[magenta]%}"
